@@ -21,7 +21,10 @@ import MyAttendance from "./pages/student/MyAttendance";
 // Layout wrapper with sidebar
 function AppLayout({ theme, toggleTheme }) {
   return (
-    <div className={`flex h-screen overflow-hidden ${theme === "dark" ? "bg-gray-950" : "bg-gray-50"}`}>
+    <div
+      className="flex h-screen overflow-hidden"
+      style={{ backgroundColor: theme === "dark" ? "#030d07" : "#f0fdf4" }}
+    >
       <Sidebar theme={theme} toggleTheme={toggleTheme} />
       <main className="flex-1 overflow-y-auto">
         <Outlet />
