@@ -25,25 +25,57 @@ export default function Sidebar({ theme, toggleTheme }) {
         navigate("/auth/login");
     };
 
-    return (
-        <aside className={`${collapsed ? "w-16" : "w-60"} transition-all duration-300 flex flex-col h-screen sticky top-0
-      ${theme === "dark" ? "bg-gray-900 border-gray-800" : "bg-white border-gray-200"} border-r`}>
+    const isDark = theme === "dark";
 
+    const sidebarStyle = {
+        background: isDark ? "rgba(5, 30, 15, 0.50)" : "rgba(255,255,255,0.70)",
+        backdropFilter: "blur(18px) saturate(180%)",
+        WebkitBackdropFilter: "blur(18px) saturate(180%)",
+        borderColor: isDark ? "rgba(52, 211, 153, 0.18)" : "rgba(16, 185, 129, 0.20)",
+        boxShadow: isDark
+            ? "0 8px 32px rgba(0,0,0,0.45), inset 0 0 0 1px rgba(16,185,129,0.06), inset 0 1px 0 rgba(52,211,153,0.18)"
+            : "0 8px 32px rgba(16,185,129,0.12)",
+    };
+
+    const dividerStyle = {
+        borderColor: isDark ? "rgba(52, 211, 153, 0.12)" : "rgba(16, 185, 129, 0.20)",
+    };
+
+    return (
+        <aside
+            className={`${collapsed ? "w-16" : "w-60"} transition-all duration-300 flex flex-col h-screen sticky top-0 border-r`}
+            style={sidebarStyle}
+        >
             {/* Logo */}
-            <div className="flex items-center gap-3 px-4 py-5 border-b border-inherit">
-                <div className="w-8 h-8 rounded-lg bg-indigo-600 flex items-center justify-center flex-shrink-0">
-                    <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div className="flex items-center gap-3 px-4 py-5 border-b" style={dividerStyle}>
+                <div
+                    className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0"
+                    style={{
+                        background: "linear-gradient(135deg, #10b981, #059669)",
+                        boxShadow: "0 0 12px rgba(16,185,129,0.4)",
+                    }}
+                >
+                    <svg className="w-5 h-5" style={{ color: "#ecfdf5" }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
                     </svg>
                 </div>
                 {!collapsed && (
-                    <span className={`font-bold text-lg tracking-tight ${theme === "dark" ? "text-white" : "text-gray-900"}`}>
+                    <span
+                        className="font-bold text-lg tracking-tight"
+                        style={{
+                            fontFamily: "'Syne', sans-serif",
+                            color: isDark ? "#ecfdf5" : "#064e3b",
+                        }}
+                    >
                         EduPulse
                     </span>
                 )}
                 <button
                     onClick={() => setCollapsed(!collapsed)}
-                    className={`ml-auto p-1 rounded-lg transition ${theme === "dark" ? "text-gray-400 hover:text-white hover:bg-gray-800" : "text-gray-400 hover:text-gray-700 hover:bg-gray-100"}`}
+                    className="ml-auto p-1 rounded-lg transition"
+                    style={{ color: "#6ee7b7" }}
+                    onMouseEnter={e => { e.currentTarget.style.color = "#ecfdf5"; e.currentTarget.style.background = "rgba(16,185,129,0.08)"; }}
+                    onMouseLeave={e => { e.currentTarget.style.color = "#6ee7b7"; e.currentTarget.style.background = "transparent"; }}
                 >
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={collapsed ? "M13 5l7 7-7 7M5 5l7 7-7 7" : "M11 19l-7-7 7-7m8 14l-7-7 7-7"} />
@@ -54,10 +86,14 @@ export default function Sidebar({ theme, toggleTheme }) {
             {/* Role Badge */}
             {!collapsed && (
                 <div className="px-4 pt-4">
-                    <span className={`text-xs font-medium px-2 py-1 rounded-md ${role === "teacher"
-                            ? "bg-indigo-500/10 text-indigo-400"
-                            : "bg-emerald-500/10 text-emerald-400"
-                        }`}>
+                    <span
+                        className="text-xs font-bold px-2 py-1 rounded-md"
+                        style={{
+                            background: "linear-gradient(135deg, #10b981, #2d9e6b)",
+                            color: "#ecfdf5",
+                            boxShadow: "0 0 12px rgba(16,185,129,0.4)",
+                        }}
+                    >
                         {role === "teacher" ? "Teacher Portal" : "Student Portal"}
                     </span>
                 </div>
@@ -70,13 +106,29 @@ export default function Sidebar({ theme, toggleTheme }) {
                         key={item.to}
                         to={item.to}
                         className={({ isActive }) =>
-                            `flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition ${isActive
-                                ? "bg-indigo-600 text-white"
-                                : theme === "dark"
-                                    ? "text-gray-400 hover:text-white hover:bg-gray-800"
-                                    : "text-gray-500 hover:text-gray-900 hover:bg-gray-100"
-                            }`
+                            `flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition ${isActive ? "border-l-[3px]" : ""}`
                         }
+                        style={({ isActive }) =>
+                            isActive
+                                ? {
+                                    background: "rgba(16, 185, 129, 0.12)",
+                                    borderLeftColor: "#10b981",
+                                    color: "#ecfdf5",
+                                }
+                                : { color: "#6ee7b7" }
+                        }
+                        onMouseEnter={e => {
+                            if (!e.currentTarget.style.borderLeftColor) {
+                                e.currentTarget.style.background = "rgba(16,185,129,0.08)";
+                                e.currentTarget.style.color = "#ecfdf5";
+                            }
+                        }}
+                        onMouseLeave={e => {
+                            if (!e.currentTarget.style.borderLeftColor) {
+                                e.currentTarget.style.background = "transparent";
+                                e.currentTarget.style.color = "#6ee7b7";
+                            }
+                        }}
                     >
                         <svg className="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d={item.icon} />
@@ -87,14 +139,14 @@ export default function Sidebar({ theme, toggleTheme }) {
             </nav>
 
             {/* Bottom Section */}
-            <div className="px-3 py-4 border-t border-inherit space-y-2">
+            <div className="px-3 py-4 border-t space-y-2" style={dividerStyle}>
                 {/* Theme Toggle */}
                 <button
                     onClick={toggleTheme}
-                    className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm transition ${theme === "dark"
-                            ? "text-gray-400 hover:text-white hover:bg-gray-800"
-                            : "text-gray-500 hover:text-gray-900 hover:bg-gray-100"
-                        }`}
+                    className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm transition"
+                    style={{ color: "#6ee7b7" }}
+                    onMouseEnter={e => { e.currentTarget.style.color = "#ecfdf5"; e.currentTarget.style.background = "rgba(16,185,129,0.08)"; }}
+                    onMouseLeave={e => { e.currentTarget.style.color = "#6ee7b7"; e.currentTarget.style.background = "transparent"; }}
                 >
                     {theme === "dark" ? (
                         <svg className="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -109,16 +161,39 @@ export default function Sidebar({ theme, toggleTheme }) {
                 </button>
 
                 {/* User + Logout */}
-                <div className={`flex items-center gap-3 px-3 py-2.5 rounded-xl ${theme === "dark" ? "bg-gray-800" : "bg-gray-100"}`}>
-                    <div className="w-7 h-7 rounded-full bg-indigo-600 flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
+                <div
+                    className="flex items-center gap-3 px-3 py-2.5 rounded-xl"
+                    style={{
+                        background: "rgba(16, 185, 129, 0.10)",
+                        border: "1px solid rgba(52, 211, 153, 0.20)",
+                    }}
+                >
+                    <div
+                        className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0"
+                        style={{
+                            background: "linear-gradient(135deg, #10b981, #059669)",
+                            color: "#ecfdf5",
+                            boxShadow: "0 0 8px rgba(16,185,129,0.35)",
+                        }}
+                    >
                         {user?.email?.[0]?.toUpperCase()}
                     </div>
                     {!collapsed && (
                         <>
-                            <span className={`text-xs truncate flex-1 ${theme === "dark" ? "text-gray-300" : "text-gray-700"}`}>
+                            <span
+                                className="text-xs truncate flex-1"
+                                style={{ color: isDark ? "#6ee7b7" : "#065f46" }}
+                            >
                                 {user?.email}
                             </span>
-                            <button onClick={handleLogout} className="text-gray-400 hover:text-red-400 transition">
+                            <button
+                                onClick={handleLogout}
+                                className="transition"
+                                style={{ color: "#6ee7b7" }}
+                                onMouseEnter={e => e.currentTarget.style.color = "#34d399"}
+                                onMouseLeave={e => e.currentTarget.style.color = "#6ee7b7"}
+                                title="Logout"
+                            >
                                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
                                 </svg>
