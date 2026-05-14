@@ -29,20 +29,28 @@ export default function Login() {
             return;
         }
 
-        // Fetch user role from users table
-        const { data: userData } = await supabase
-            .from("users")
-            .select("role")
-            .eq("id", data.user.id)
-            .single();
+        try {
+            // Fetch user role from users table
+            const { data: userData, error: roleError } = await supabase
+                .from("users")
+                .select("role")
+                .eq("id", data.user.id)
+                .single();
 
-        if (userData?.role === "teacher") {
-            navigate("/teacher/dashboard");
-        } else {
+            if (roleError) throw roleError;
+
+            if (userData?.role === "teacher") {
+                navigate("/teacher/dashboard");
+            } else {
+                navigate("/student/dashboard");
+            }
+        } catch (err) {
+            console.error("Role detection failed:", err);
+            // Default to student dashboard if role check fails
             navigate("/student/dashboard");
+        } finally {
+            setLoading(false);
         }
-
-        setLoading(false);
     };
 
     return (

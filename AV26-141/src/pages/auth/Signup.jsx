@@ -32,25 +32,41 @@ export default function Signup() {
 
         setLoading(true);
 
-        const { data, error: signupError } = await supabase.auth.signUp({
+        const { data, error: authError } = await supabase.auth.signUp({
             email: form.email,
             password: form.password,
+            options: {
+                data: {
+                    full_name: form.fullName,
+                    role: form.role
+                }
+            }
         });
 
-        if (signupError) {
-            setError(signupError.message);
+        if (authError) {
+            setError(authError.message);
             setLoading(false);
             return;
         }
 
-        // Insert into users table with role
-        await supabase.from("users").insert({
-            id: data.user.id,
-            email: form.email,
-            full_name: form.fullName,
-            role: form.role,
-        });
+        if (data?.user) {
+            // Force create the user entry in the public users table immediately
+            const { error: dbError } = await supabase.from("users").upsert({
+                id: data.user.id,
+                email: form.email,
+                full_name: form.fullName,
+                role: form.role
+            });
 
+            if (dbError) {
+                console.error("DB Error:", dbError);
+                setError("Account created but role setup failed. Please contact admin.");
+                setLoading(false);
+                return;
+            }
+        }
+
+        alert("Success! Your " + form.role + " account has been created. You can now log in.");
         navigate("/auth/login");
         setLoading(false);
     };
