@@ -17,17 +17,56 @@ function parseExcel(filePath) {
   const sheetName = workbook.SheetNames[0];
   const sheet = workbook.Sheets[sheetName];
 
-  // raw: false → numbers stay as numbers
-  const rows = XLSX.utils.sheet_to_json(sheet, { raw: false, defval: '' });
+  const data = XLSX.utils.sheet_to_json(sheet, { header: 1, defval: '' });
+  console.log('--- EXCEL DATA DEBUG ---');
+  console.log('First 2 rows:', data.slice(0, 2));
+  console.log('Total rows:', data.length);
 
-  // Normalise keys: trim whitespace, lowercase
-  return rows.map(row => {
-    const clean = {};
-    for (const [k, v] of Object.entries(row)) {
-      clean[k.trim().toLowerCase().replace(/\s+/g, '_')] = v;
+  // If the first row looks like headers, we'll use them. 
+  // Otherwise, we map by position (A=0, B=1, etc.)
+  const firstRow = data[0] || [];
+  const hasHeaders = firstRow.some(cell => 
+    ['name', 'email', 'math', 'science', 'roll'].includes(String(cell).toLowerCase().trim())
+  );
+
+  const finalRows = [];
+  const startIndex = hasHeaders ? 1 : 0;
+
+  for (let i = startIndex; i < data.length; i++) {
+    const row = data[i];
+    if (!row[0] && !row[1]) continue; // Skip empty rows
+
+    const obj = {};
+    if (hasHeaders) {
+      // Use header names
+      firstRow.forEach((header, idx) => {
+        const key = String(header).trim().toLowerCase().replace(/\s+/g, '_');
+        obj[key] = row[idx];
+      });
+    } else {
+      // Map by standard position from your screenshot
+      obj['full_name']             = row[0];
+      obj['email']                 = row[1];
+      obj['roll_no']               = row[2];
+      obj['class']                 = row[3];
+      obj['section']               = row[4];
+      obj['maths']                 = row[5];
+      obj['science']               = row[6];
+      obj['english']               = row[7];
+      obj['kannada']               = row[8];
+      obj['social_sci']            = row[9];
+      obj['exam_type']             = row[10];
+      obj['exam_date']             = row[11];
+      obj['attendance_total']      = row[12];
+      obj['attendance_present']    = row[13];
+      obj['assignments_total']     = row[14];
+      obj['assignments_submitted'] = row[15];
+      obj['month']                 = row[16];
     }
-    return clean;
-  });
+    finalRows.push(obj);
+  }
+
+  return finalRows;
 }
 
 module.exports = { parseExcel };
