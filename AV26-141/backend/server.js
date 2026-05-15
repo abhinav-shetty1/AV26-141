@@ -7,7 +7,7 @@ require('dotenv').config();
 const app = express();
 
 // ── Middleware ────────────────────────────────────────
-app.use(cors({ origin: ['http://localhost:5173', 'http://localhost:5174'] }));
+app.use(cors({ origin: ['http://localhost:5173', 'http://localhost:5174', 'https://edupulse12.netlify.app'] }));
 app.use(express.json());
 
 // Ensure uploads folder exists
